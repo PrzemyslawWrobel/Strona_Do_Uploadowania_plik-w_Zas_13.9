@@ -1,15 +1,19 @@
 var fs = require('fs');
 var formidable = require('formidable');
 
+
+function sendData(response, head, status, write, type) {
+	response.writeHead(status, head);
+	response.write(write, type);
+	response.end();	
+}
+
 exports.upload = function(request, response) {
 	console.log("Rozpoczynam obsługę żądania welcome.");
 	var form = new formidable.IncomingForm();
 	
 	form.parse(request, function(error, fields, files) {
-		response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
-		response.write("received image:<br/>");
-		response.write("<img src='/show' />");
-		response.end();	
+		sendData(response, {"Content-Type": "text/html; charset=utf-8"}, 200, "received image:<br/> <img src='/show' />", "utf-8");
 	});
 	
 };
@@ -17,24 +21,18 @@ exports.upload = function(request, response) {
 exports.welcome = function(request, response) {
 	console.log("Rozpoczynam obsługę żądania welcome.");
 	fs.readFile('templates/start.html', function(err, html) {
-		response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
-		response.write(html);
-		response.end();
+		sendData(response, {"Content-Type": "text/html; charset=utf-8"}, 200, html, "utf-8");
 	});
 	
 };
 
 exports.error = function(requst, response) {
-	console.log("Nie wiem co robić");
-	response.write("404 :");
-	response.end();
+	sendData(response, {"Content-Type": "text/html; charset=utf-8"}, 404, "404", "utf-8");
 };
 
 exports.show = function(request, response) {
 	fs.readFile("test.png", "binary", function(error, file) {
-		rsponse.writeHead(200, {"Content-Type": "image/png"});
-		response.write(file, "binary");
-		response.end();
+		sendData(response, {"Content-Type": "image/png"}, 200, file, "binary" );
 	});
 };
 
